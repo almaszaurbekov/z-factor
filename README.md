@@ -4,7 +4,7 @@ The Z-factor does not depend on the magnitude of pressure and temperature, but o
 
 In order to get the pseudo-critical temperature and pressure of the composition, we need to get as input: 
 
-![Image of formula](https://github.com/FoxyChmoxy/z-factor/blob/master/Screenshot%20from%202020-08-02%2015-40-57.png?raw=true)
+![Image of formula](https://github.com/FoxyChmoxy/z-factor/blob/master/docs/Screenshot%20from%202020-08-02%2015-40-57.png?raw=true)
 
 - `n`   = the number of components in the composition
 - `yi`  = number of moles of a particular component j
@@ -13,14 +13,14 @@ In order to get the pseudo-critical temperature and pressure of the composition,
 
 We can use natural gas composition as an example:
 
-![Image of example](https://github.com/FoxyChmoxy/z-factor/blob/master/Screenshot%20from%202020-08-01%2012-55-34.png?raw=true)
+![Image of example](https://github.com/FoxyChmoxy/z-factor/blob/master/docs/Screenshot%20from%202020-08-01%2012-55-34.png?raw=true)
 
 From this table we can find out that:
 - `n` = 5
 - `P_pc` = `sum(yi * pcj)` = 826.92
 - `T_pc` = `sum(yi * Tcj)` = 433.81
 
-![Image of pseudo-critical values](https://github.com/FoxyChmoxy/z-factor/blob/master/Screenshot%20from%202020-08-02%2015-51-16.png?raw=true)
+![Image of pseudo-critical values](https://github.com/FoxyChmoxy/z-factor/blob/master/docs/Screenshot%20from%202020-08-02%2015-51-16.png?raw=true)
 
 ```python
 def get_data_from_file(filename):
@@ -67,7 +67,7 @@ if __name__ == "__main__":
 ```
 Then we can find out our Z-Factor with:
 
-![Image of Z-Factor value](https://github.com/FoxyChmoxy/z-factor/blob/master/photo_2020-08-02_15-46-03.jpg?raw=true)
+![Image of Z-Factor value](https://github.com/FoxyChmoxy/z-factor/blob/master/docs/photo_2020-08-02_15-46-03.jpg?raw=true)
 ```python
 def get_z_factor(T_pr, P_pr):
     A = 1.39 * ((T_pr - 0.92) ** 0.5) - (0.36*T_pr) - 0.10
@@ -87,7 +87,7 @@ if __name__ == "__main__":
 
 The web interface for users looks quite acceptable: with instructions on how to use it and instant results on an asynchronous request.
 
-![Image of interface](https://github.com/FoxyChmoxy/z-factor/blob/master/Screenshot%20from%202020-08-02%2015-28-46.png?raw=true)
+![Image of interface](https://github.com/FoxyChmoxy/z-factor/blob/master/docs/Screenshot%20from%202020-08-02%2015-28-46.png?raw=true)
 
 index.html
 ```js
