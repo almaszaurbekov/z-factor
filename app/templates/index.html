@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <title>Z-Factor finding</title>
+  </head>
+
+    <div class="container pt-5 mt-5">
+        <div class="row">
+            <div class="col-md-6 border-right">
+                <div class="form-group">
+                    <div class="jumbotron" style="padding:20px;">
+                        <p><b>Инструкция.</b> Заполняйте все поля и добавляйте новые компоненты. Затем укажите <b>системные данные</b>, затем вы можете вычислить <b>Z-Factor</b>. Любой добавленный компонент не может дублироваться.</p>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="">Мольное число</label>
+                            <input id="y-input" type="number" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="">Температура</label>
+                            <input id="t-input" type="number" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="">Давление</label>
+                            <input id="p-input" type="number" class="form-control">
+                        </div>
+                        <div class="col-md-12 mt-3">
+                            <input id="add-component" type="button" class="btn btn-success btn-block" value="Добавить">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <form>
+                    <input name="temperatures" type="hidden">
+                    <input name="molars" type="hidden">
+                    <input name="pressures" type="hidden">
+                    <div class="form-group border-bottom pb-3 mb-3">
+                        <h3>Системные данные</h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="">Температура системы</label>
+                                <input id="t_system" name="tSystem" type="number" class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="">Давление системы</label>
+                                <input id="p_system" name="pSystem" type="number" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <h3>Данные композиции</h3>
+                        <div id="components"></div>
+                        <p id="empty-value">
+                            Вы не добавили еще никаких данных.
+                        </p>
+                    </div>
+                    <div class="form-group text-right">
+                        <input id="submit" type="button" disabled value="Вычислить Z-Factor" class="btn btn-success pull-right">
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="pb-5 mb-5 pt-4" id="result"></div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    <script>
+
+        alertify.defaults = {
+            // dialogs defaults
+            autoReset:true,
+            basic:false,
+            closable:true,
+            closableByDimmer:true,
+            invokeOnCloseOff:false,
+            frameless:false,
+            defaultFocusOff:false,
+            maintainFocus:true, // <== global default not per instance, applies to all dialogs
+            maximizable:true,
+            modal:true,
+            movable:true,
+            moveBounded:false,
+            overflow:true,
+            padding: true,
+            pinnable:true,
+            pinned:true,
+            preventBodyShift:false, // <== global default not per instance, applies to all dialogs
+            resizable:true,
+            startMaximized:false,
+            transition:'pulse',
+            transitionOff:false,
+            tabbable:'button:not(:disabled):not(.ajs-reset),[href]:not(:disabled):not(.ajs-reset),input:not(:disabled):not(.ajs-reset),select:not(:disabled):not(.ajs-reset),textarea:not(:disabled):not(.ajs-reset),[tabindex]:not([tabindex^="-"]):not(:disabled):not(.ajs-reset)',  // <== global default not per instance, applies to all dialogs
+
+            // notifier defaults
+            notifier:{
+            // auto-dismiss wait time (in seconds)  
+                delay:5,
+            // default position
+                position:'bottom-right',
+            // adds a close button to notifier messages
+                closeButton: false,
+            // provides the ability to rename notifier classes
+                classes : {
+                    base: 'alertify-notifier',
+                    prefix:'ajs-',
+                    message: 'ajs-message',
+                    top: 'ajs-top',
+                    right: 'ajs-right',
+                    bottom: 'ajs-bottom',
+                    left: 'ajs-left',
+                    center: 'ajs-center',
+                    visible: 'ajs-visible',
+                    hidden: 'ajs-hidden',
+                    close: 'ajs-close'
+                }
+            },
+
+            // language resources 
+            glossary:{
+                // dialogs default title
+                title:'AlertifyJS',
+                // ok button text
+                ok: 'OK',
+                // cancel button text
+                cancel: 'Cancel'            
+            },
+
+            // theme settings
+            theme:{
+                // class name attached to prompt dialog input textbox.
+                input:'ajs-input',
+                // class name attached to ok button
+                ok:'ajs-ok',
+                // class name attached to cancel button 
+                cancel:'ajs-cancel'
+            },
+            // global hooks
+            hooks:{
+                // invoked before initializing any dialog
+                preinit:function(instance){},
+                // invoked after initializing any dialog
+                postinit:function(instance){},
+            },
+        };
+
+        $(document).ready(function () {
+            var temperatures = [];
+            var pressures = [];
+            var molar_numbers = [];
+            var target = $("#components");
+
+            $("#add-component").click(function(){
+                var y_value = $("#y-input").val();
+                var t_value = $("#t-input").val();
+                var p_value = $("#p-input").val();
+
+                if(y_value === "" || t_value === "" || p_value === ""){
+                    alertify.error('Не все поля заполнены.');
+                    return;
+                }
+
+                if(temperatures.length == 0){
+                    $("#empty-value").css("display", "none");
+                    $("#submit").attr("disabled", false);
+
+                    molar_numbers.push(y_value);
+                    temperatures.push(t_value);
+                    pressures.push(p_value);
+
+                    var row = $(`<div class='row' component='0'></div>`)
+                    row.append(`<div class='col-md-4 mb-3'><input readonly class='y-value form-control' value='${y_value}'></div>`)
+                    row.append(`<div class='col-md-4 mb-3'><input readonly class='t-value form-control' value='${t_value}'></div>`)
+                    row.append(`<div class='col-md-4 mb-3'><input readonly class='p-value form-control' value='${p_value}'></div>`)
+                    // row.append(`<div class='col-d-3 mb-3'><input type="button" index="0" class='remove-component btn btn-danger btn-block' value='Удалить'></div>`)
+                    target.append(row);
+                }
+                else{
+                    is_same_molar = false;
+                    is_same_temperature = false;
+                    is_same_pressure = false;
+
+                    for(let molar of molar_numbers){
+                        if (molar === y_value){
+                            is_same_molar = true;
+                            break;
+                        }
+                    }
+
+                    for(let temperature of temperatures){
+                        if (temperature === t_value){
+                            is_same_temperature = true;
+                            break;
+                        }
+                    }
+
+                    for(let pressure of pressures){
+                        if (pressure === p_value){
+                            is_same_pressure = true;
+                            break;
+                        }
+                    }
+
+                    if(is_same_pressure && is_same_temperature && is_same_molar){
+                        alertify.error('Этот компонент уже добавлен.');
+                    }
+                    else{
+                        var row = $(`<div class='row' component='${temperatures.length}'></div>`)
+                        row.append(`<div class='col-md-4 mb-3'><input readonly class='y-value form-control' value='${y_value}'></div>`)
+                        row.append(`<div class='col-md-4 mb-3'><input readonly class='t-value form-control' value='${t_value}'></div>`)
+                        row.append(`<div class='col-md-4 mb-3'><input readonly class='p-value form-control' value='${p_value}'></div>`)
+                        // row.append(`<div class='col-md-3 mb-3'><input type='button' index="${temperatures.length}" class='remove-component btn btn-danger btn-block' value='Удалить'></div>`)
+                        target.append(row);
+
+                        temperatures.push(t_value);
+                        pressures.push(p_value);
+                        molar_numbers.push(y_value);
+                    }
+                }
+            });
+
+            $("#submit").click(function(){
+                var t_system = $("#t_system").val();
+                var p_system = $("#p_system").val();
+
+                if(t_system === "" || p_system === ""){
+                    alertify.error("Данные системы не заданы.")
+                }
+                else{
+
+                    y = "";
+                    t = "";
+                    p = "";
+
+                    for(let i in temperatures){
+                        y += molar_numbers[i] + " ";
+                        t += temperatures[i] + " ";
+                        p += pressures[i] + " ";
+                    }
+
+                    $("input[name='temperatures']").val(t.trim());
+                    $("input[name='molars']").val(y.trim());
+                    $("input[name='pressures']").val(p.trim());
+
+                    $.ajax({
+                        url: "/zfactor",
+                        type: "POST",
+                        data: $("form").serialize(),
+                        datatype: "json",
+                        success: function(response) {
+                            console.log(response);
+                            $("#result").html(`<h2>Z = ${response.result}</h2>`)
+                        }
+                    });
+                }
+            });
+
+            $('#components').on('click', '.remove-component', function () {
+                var index = $(this).attr("index");
+
+                molar_numbers.splice(index, 1);
+                temperatures.splice(index, 1);
+                pressures.splice(index, 1);
+
+                $(`div[component="${index}"]`).remove();
+
+                if(temperatures.length == 0){
+                    $("#empty-value").css("display", "block");
+                    $("#submit").attr("disabled", true);
+                }
+            });
+        });
+    </script>
+  </body>
+</html>
